@@ -8,10 +8,10 @@ Disconnected Satellite Ansible Role.  The role structure is a standard role stru
 
 ![Architecture](satellite.png "Architecture")
 
-NOTE: for the example_usage to use the role create a link for both examples subfolders.  
+NOTE: (MODIFY AS NEEDED) for the example_usage to use the role create a link for both examples subfolders.  Playbooks need access to the role which is a leve;l above. 
 ```
-# ln -s /home/kpeeples/example-usage-baseline/provisioning/roles/satellite  
-# ln -s /home/kpeeples/cure-satellite/example-usage-deployable/provisioning/roles/satellite  
+# ln -s .. /home/kpeeples/satellite/example-usage-baseline/provisioning/roles/satellite  
+# ln -s .. /home/kpeeples/satellite/example-usage-deployable/provisioning/roles/satellite  
 ```
 
 Steps to run:   
