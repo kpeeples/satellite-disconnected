@@ -1,0 +1,48 @@
+---
+- name: Scan for new disks
+  shell: /usr/sbin/pvscan 
+  when: config_lvm and ansible_os_family == "RedHat"
+  tags:
+    - disks
+
+- name: Create VG
+  lvg:
+    vg: "{{ content_vgname }}"
+    pvs: "{{ content_disk }}"
+    state: present
+  when: create and config_lvm
+  tags:
+    - disks
+
+- name: Create LV
+  lvol:
+    vg: "{{ content_vgname }}"
+    lv: "{{ item.name }}"
+    size: "{{ item.size }}"
+  when: create and config_lvm
+  with_items:
+    - "{{ content_lvs }}"
+  tags:
+    - disks
+
+- name: Create filesystems
+  filesystem:
+    fstype: "{{ item.filesystem }}"
+    dev: "/dev/{{ content_vgname }}/{{ item.name }}"
+  when: create and config_lvm
+  with_items:
+    - "{{ content_lvs }}"
+  tags:
+    - disks
+
+- name: Mount filesystems
+  mount:
+    path: "{{ item.mnt_dir }}"
+    src: "/dev/{{ content_vgname }}/{{ item.name }}"
+    fstype: "{{ item.filesystem }}"
+    state: mounted
+  when: create and config_lvm
+  with_items:
+    - "{{ content_lvs }}"
+  tags:
+    - disks

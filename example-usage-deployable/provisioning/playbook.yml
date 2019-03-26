@@ -1,0 +1,40 @@
+---
+- hosts: "satellitenew"
+  become: yes
+  vars_files:
+    - vars.yml
+  tasks:
+
+  - name: Deploy local repo template
+    template:
+      src: templates/satellite-local.repo.j2
+      dest: /etc/yum.repos.d/satellite-local.repo
+      owner: root
+      group: root
+      mode: '0644'
+
+  #- name: Clean Yum repo cache
+  #  command: yum clean all
+
+  #- name: Update all packages
+  #  yum:
+  #    name: "*"
+  #    state: latest
+  #  register: yum_update
+
+  - name: Install Satellite packages
+    yum:
+      name: satellite
+      state: latest
+      skip_broken: yes
+
+  - name: Mount filesystems
+    mount:
+      path: "{{ item.mnt_dir }}"
+      src: "/dev/{{ content_vgname }}/{{ item.name }}"
+      fstype: "{{ item.filesystem }}"
+      state: mounted
+    with_items:
+      - "{{ content_lvs }}"
+    tags:
+      - disks

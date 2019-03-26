@@ -1,0 +1,217 @@
+---
+# vars file for satellite
+# Download manifest zip file and place in files
+# Set upstream_cdn_repo_server for the http repo server
+# Set disconnected variable
+disconnected: true
+manifest_file: manifest_DisconnectedSatelliteTest_20181031T230145Z.zip # manifest_DCO_Ft_Gordon_Satellite_20181030T141330Z.zip # satellite_manifest.zip
+upstream_cdn_repo_server:  172.20.10.7:8080  # 192.168.1.123:8080 #
+#upstream_cdn_repo_server: satellite.misterlas.com
+enable_repos: false
+install: true
+idm_realm_setup: false
+idm_dns_setup: false
+tftp: false
+dhcp_proxy: false
+dns_proxy: false
+
+enable_templatesync: true
+sat_org: armycpb
+sat_loc: ftgordon
+admin_username: admin
+#vault variable
+##ansible-vault encrypt_string Password123 --ask-vault-pass
+##vault-pass in example will be Password123 as well
+admin_pass: !vault |
+            $ANSIBLE_VAULT;1.1;AES256
+            32626638653335333333643730653466393264663533663838646161646333316332653930383930
+            3563373636666139626439653132386663646536613039320a643332626666373633666266383631
+            31366535383934333634353264316438373564666338613533396664383861303533313866346461
+            3866366333303937370a636166616464633862396363643737336639303731633433616530643566
+            3639
+subscriptionusername: ''
+subscriptionpassword: ''
+default_download_policy: on_demand
+upstream_cdn_path: http://192.168.1.123:8080/Library  # https://cdn.redhat.com #
+config_lvm: true                    # must be set to true in order to configure drives
+create: true                        # set to true if creating a new logical volume
+content_disk: '/dev/sdb'            # set to new disk being added to volume group /dev/sdb
+content_vgname: 'vg_content'        # set to volume group name to create
+content_lvs:
+  - name: 'lv_cache'
+    size: '10G'
+    mnt_dir: '/var/cache/pulp'
+    filesystem: 'xfs'
+  - name: 'lv_pulp'
+    size: '129G'
+    mnt_dir: '/var/lib/pulp'
+    filesystem: 'xfs'
+  - name: 'lv_mongodb'
+    size: '50G'
+    mnt_dir: '/var/lib/mongodb'
+    filesystem: 'xfs'
+  - name: 'lv_pgsql'
+    size: '10G'
+    mnt_dir: '/var/lib/pgsql'
+    filesystem: 'xfs'
+
+idm_realm_setup: false
+idm_dns_setup: false
+idm_vars:
+  idm_server: 'idm01.example.com'
+  idm_principal: 'admin'
+  idm_password: !vault |
+                $ANSIBLE_VAULT;1.1;AES256
+                32626638653335333333643730653466393264663533663838646161646333316332653930383930
+                3563373636666139626439653132386663646536613039320a643332626666373633666266383631
+                31366535383934333634353264316438373564666338613533396664383861303533313866346461
+                3866366333303937370a636166616464633862396363643737336639303731633433616530643566
+                3639
+  idm_realm: 'EXAMPLE.COM'
+  idm_domain: 'example.com'
+idm_auth_vars:
+  ldap_server: "idm01.example.com"
+  ldap_user: "uid=satellite-bind,cn=users,cn=accounts,dc=example,dc=com"
+  ldap_password: !vault |
+                 $ANSIBLE_VAULT;1.1;AES256
+                 32626638653335333333643730653466393264663533663838646161646333316332653930383930
+                 3563373636666139626439653132386663646536613039320a643332626666373633666266383631
+                 31366535383934333634353264316438373564666338613533396664383861303533313866346461
+                 3866366333303937370a636166616464633862396363643737336639303731633433616530643566
+                 3639
+  ldap_base_dn: "cn=example,cn=com"
+  ldap_groups_base_dn: "cn=groups,cn=accounts,dc=example,dc=com"
+
+tftp: false
+tftp_vars:
+  tftp_addr: 192.168.11.10
+
+dns_proxy: false
+dns_vars:
+  dns_interface: eth0
+  dns_zone: example.com
+  dns_forwarders: 192.168.11.27
+  dns_reverse: 11.168.192.in-addr.arpa
+
+dhcp_proxy: false
+dhcp_vars:
+  dhcp_interface: eth0
+  dhcp_range: "192.168.11.220-192.168.11.230"
+  dhcp_nameservers: 192.168.11.27
+
+install_log_dir: /root/satellite-install
+
+#6.3
+#satellite_repos:
+#  - rhel-7-server-rpms
+#  - rhel-7-server-satellite-6.3-rpms
+#  - rhel-server-rhscl-7-rpms
+
+#6.4
+satellite_repos:
+  - rhel-7-server-rpms
+  - rhel-7-server-satellite-6.4-rpms
+  - rhel-server-rhscl-7-rpms
+  - rhel-7-server-satellite-maintenance-6.4-rpms
+  - rhel-7-server-ansible-2.6-rpms
+
+
+#sync values might need increased depending upon connection
+sync_plan:
+  name: "Daily_Sync"
+  interval: "daily"
+  startdate: "1971-01-01 03:00:00"
+pulp_content_sync_retries: 10 #number of retries before failing sync 30
+pulp_content_sync_delay: 10   #seconds to wait before retrying 60
+pulp_content:
+  #RHEL
+  - product: "Red Hat Enterprise Linux Server"
+    name: "Red Hat Enterprise Linux 7 Server (RPMs)"
+    basearch: "x86_64"
+    releasever: "7Server"
+  - product: "Red Hat Enterprise Linux Server"
+    name: "Red Hat Enterprise Linux 7 Server - Optional (RPMs)"
+    basearch: "x86_64"
+    releasever: "7Server"
+  - product: "Red Hat Enterprise Linux Server"
+    name: "Red Hat Enterprise Linux 7 Server - RH Common (RPMs)"
+    basearch: "x86_64"
+    releasever: "7Server"
+  - product: "Red Hat Enterprise Linux Server"
+    name: "Red Hat Enterprise Linux 7 Server - Supplementary (RPMs)"
+    basearch: "x86_64"
+    releasever: "7Server"
+  - product: "Red Hat Enterprise Linux Server"
+    name: "Red Hat Satellite Tools 6.4 (for RHEL 7 Server) (RPMs)"
+    basearch: "x86_64"
+  - product: "Red Hat Enterprise Linux Server"
+    name: "Red Hat Storage Native Client for RHEL 7 (RPMs)"
+    basearch: "x86_64"
+    releasever:  "7Server"
+  - product: "Red Hat Enterprise Linux Server"
+    name: "Red Hat Enterprise Linux 7 Server (Kickstart)"
+    basearch:  "x86_64"
+    releasever:  "7.5"
+
+content_views:
+  - cv_name: "RHEL-CV"
+    cv_label: "RHEL-CV"
+    repos:
+      - "Red Hat Enterprise Linux 7 Server RPMs x86_64 7Server"
+      - "Red Hat Enterprise Linux 7 Server Kickstart x86_64 7.5"
+      - "Red Hat Satellite Tools 6.4 for RHEL 7 Server RPMs x86_64"
+      - "Red Hat Enterprise Linux 7 Server - Extras RPMs x86_64"
+      - "Red Hat Enterprise Linux 7 Server - RH Common RPMs x86_64 7Server"
+      - "Red Hat Enterprise Linux 7 Server - Supplementary RPMs x86_64 7Server"
+
+lifecycle_envs:
+  # Library > Development > Testing > Production
+  - name: DEV
+    label: Development
+    prior: Library
+  - name: TEST
+    label: Testing
+    prior: DEV
+  - name: PROD
+    label: Production
+    prior: TEST
+
+provisioning:
+  default_os_ver_ks: "7.5"
+
+activation_keys:
+#auto-generated based off of CV and Lifecycle
+
+puppet_vars:
+  autosign_rules:
+    - "*.example.com"
+    - "*.example2.com"
+
+subnets:
+  - name: "Example_Subnet_1"
+    network: "10.1.1.0"
+    mask: "255.255.255.0"
+    vlan: ""
+  - name: "Example_Subnet_2"
+    network: "10.1.2.0"
+    mask: "255.255.255.0"
+    vlan: "200"
+
+hostgroups:
+  level_one:
+    - name: "RHEL"
+    - name: "OCP"
+    - name: "RHV"
+  level_two:
+    - name: "Development"
+      parent: "OCP"
+    - name: "Production"
+      parent: "OCP"
+    - name: "Development"
+      parent: "RHEL"
+    - name: "Production"
+      parent: "RHEL"
+    - name: "Development"
+      parent: "RHV"
+    - name: "Production"
+      parent: "RHV"

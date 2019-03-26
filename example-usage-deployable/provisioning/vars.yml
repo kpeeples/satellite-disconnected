@@ -1,0 +1,19 @@
+upstream_cdn_repo_server: 172.20.10.7:8080  
+content_vgname: 'vg_content'        # set to volume group name to create
+content_lvs:
+  - name: 'lv_cache'
+    size: '10G'
+    mnt_dir: '/var/cache/pulp'
+    filesystem: 'xfs'
+  - name: 'lv_pulp'
+    size: '129G'
+    mnt_dir: '/var/lib/pulp'
+    filesystem: 'xfs'
+  - name: 'lv_mongodb'
+    size: '50G'
+    mnt_dir: '/var/lib/mongodb'
+    filesystem: 'xfs'
+  - name: 'lv_pgsql'
+    size: '10G'
+    mnt_dir: '/var/lib/pgsql'
+    filesystem: 'xfs'

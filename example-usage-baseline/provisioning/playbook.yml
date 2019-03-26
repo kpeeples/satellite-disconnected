@@ -1,0 +1,8 @@
+---
+- name: Satellite Disconnected Install
+  hosts: "satellite"
+  become: true
+  vars:
+    host_group: satellite
+  roles:
+    - satellite

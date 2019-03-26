@@ -1,0 +1,10 @@
+---
+# defaults file for satellite
+ntp_timezone: America/New York
+
+firewall_allowed_tcp_ports:
+  - "22"
+  - "25"
+  - "80"
+  - "443"
+  - "8080"
